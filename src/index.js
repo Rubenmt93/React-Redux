@@ -14,6 +14,10 @@ const store= createStore((state= 0, action)=>{ //Es un reducer????
     case 'decrementar':{
       return state-1
     }
+    case 'set':{
+
+      return action.payload
+    }
     default: 
       return state
   }
@@ -26,6 +30,12 @@ store.dispatch({ type: 'incrementar'})
 console.log(store.getState());
 store.dispatch({ type: 'decrementar'})
 console.log(store.getState());
+store.dispatch({ type: 'set', payload:15})
+console.log(store.getState());
+
+store.dispatch({ type: 'incrementar'})
+console.log(store.getState());
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

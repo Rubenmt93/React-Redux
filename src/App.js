@@ -1,39 +1,43 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-export const reducer =  (state = 0, action) => {
-  console.log({action, state});
-  switch(action.type){
-    case 'incrementar':{
-      return state+1
-    }
-    case 'decrementar':{
-      return state-1
-    }
-    case 'set':{
 
-      return action.payload
+const initialState = {
+  entities: []
+}
+export const reducer =  (state = initialState, action) => {
+  
+    switch(action.type) {
+      case 'todo/add': {
+        console.log('reducer')
+        return {
+          ...state,
+          entities:[{}]
+        }
+      }
     }
-    default: 
       return state
-  }
+  
   
 }
 
 function App() {
-  const [valor, setvalor]= useState('')
-  const dispatch= useDispatch()
-  const state = useSelector( state => state)
-  const set = () => {
-    dispatch({type:'set', payload: valor})
-    setvalor('')
-  }
+  const dispatch = useDispatch()
+  const state= useSelector(x=>x)
+  console.log(state, 'Rendering')
   return (
     <div className="App">
-      <p> Contador: {state}</p>
-      <button onClick={() => dispatch({type:'incrementar'})}>Incrementar</button>
-      <button onClick={() => dispatch({type:'decrementar'})}>Decrementar</button>
-      <button onClick={set}>Set</button>
-      <input value={valor} onChange={ e=> setvalor(Number(e.target.value))}/>
+      <form >
+        <input></input>
+        </form>
+        <button onClick={() => dispatch({type: 'todo/add'})}>Mostrar Todos</button>
+        <button>Completados</button>
+        <button>Incompletos</button>
+      
+
+      <ul>
+        <li>To do 1</li>
+        <li>To do 2</li>
+      </ul>
     </div>
   );
 }

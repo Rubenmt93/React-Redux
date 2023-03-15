@@ -5,38 +5,52 @@ const initialState = {
   entities: []
 }
 export const reducer =  (state = initialState, action) => {
-  
+
     switch(action.type) {
       case 'todo/add': {
         console.log('reducer')
         return {
           ...state,
-          entities:[{}]
+          entities:state.entities.concat({...action.payload})
         }
       }
+      default:
+        return state
     }
-      return state
-  
-  
 }
-
+const TodoItem = ({todo}) => {
+  return (
+    <li>{todo.tittle}</li>
+  )
+}
 function App() {
+  const [value, setValue] = useState('')
   const dispatch = useDispatch()
   const state= useSelector(x=>x)
-  console.log(state, 'Rendering')
-  return (
+  console.log({state})
+
+  const submit = (e) => {
+    e.preventDefault()
+    if(!value.trim()){
+      return
+    }
+    const id = Math.random().toString(36)
+    const todo = {tittle: value, complete: false, id}
+    dispatch({type: 'todo/add', payload: todo})
+    setValue('')
+  }
+return (
     <div className="App">
-      <form >
-        <input></input>
-        </form>
-        <button onClick={() => dispatch({type: 'todo/add'})}>Mostrar Todos</button>
-        <button>Completados</button>
-        <button>Incompletos</button>
-      
+      <form onSubmit={submit}>
+        <input value= {value} onChange= {e => setValue(e.target.value)}></input>
+      </form >
+      <button>Mostrar Todos</button>
+      <button>Completados</button>
+      <button>Incompletos</button>
+
 
       <ul>
-        <li>To do 1</li>
-        <li>To do 2</li>
+        {state.entities.map(todo => <TodoItem key={todo.id} todo={todo}></TodoItem>)}
       </ul>
     </div>
   );

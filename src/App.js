@@ -1,43 +1,45 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { combineReducers } from "redux";
 
-const initialState = {
-  entities: [],
-  filter: 'all'
-}
-export const reducer =  (state = initialState, action) => {
 
-    switch(action.type) {
-      case 'todo/add': {
-        console.log('reducer')
-        return {
-          ...state,
-          entities:state.entities.concat({...action.payload})
-        }
-      }
-      case 'todo/complete' : {
-        const newTodos= state.entities.map(todo => {
-          if(todo.id === action.payload.id){
-            return {...todo, completed: !todo.completed}
-          }
-
-          return todo
-        })
-        return {
-          ...state,
-          entities:newTodos
-        }
-      }
-      case 'filter/set':{
-        return {
-          ...state,
-          filter: action.payload
-        }
-      }
-      default:
-        return state
+export const filterReducer=(state= 'all', action) => {
+  switch(action.type) {
+    case 'filter/set':{
+      return  action.payload      
+    }
+    default:
+      return state
+    
     }
 }
+export const todoReducer=(state= [], action) => {
+  switch(action.type) {
+    case 'todo/add': {
+      console.log('reducer')
+      return  state.concat({...action.payload})
+      
+    }
+    case 'todo/complete' : {
+      const newTodos= state.map(todo => {
+        if(todo.id === action.payload.id){
+          return {...todo, completed: !todo.completed}
+        }
+        return todo
+      })
+      return newTodos      
+    }
+
+    default:
+      return state
+  }
+}
+
+export const reducer= combineReducers({
+  entities: todoReducer,
+  filter: filterReducer
+})
+
 const selectToDos= state => {
   const {entities, filter} = state
   if(filter === 'complete'){

@@ -8,8 +8,19 @@ export const asyncMiddleware = store => next => action =>{
   }
   return  next(action)
 }
-export const  fetchThunk = () => dispatch => {
-  console.log('soy un thunk sea lo que sea eso que mi profe hipster dice')
+export const  fetchThunk = () => async dispatch => {
+  dispatch({ type: 'todos/pending'})
+  try{
+      const response =  await fetch('https://jsonplaceholder.typicode.com/todos')
+      const data= await response.json();
+      const todos = data.slice(0,10)
+     
+        
+      dispatch({ type: 'todos/fullfilled', payload: todos})
+
+  }catch (e){
+    dispatch({type: 'todos/error', error: e.message})
+  }
 }
 export const filterReducer=(state= 'all', action) => {
   switch(action.type) {
@@ -36,6 +47,9 @@ export const todoReducer=(state= [], action) => {
         return todo
       })
       return newTodos      
+    }
+    case 'todos/fullfilled': {
+      return action.payload
     }
 
     default:
@@ -65,7 +79,7 @@ const TodoItem = ({todo}) => {
     <li 
     style={{textDecoration: todo.completed? 'line-through' : 'none'}}
     onClick={()=> dispatch({type: 'todo/complete',payload: todo})}>
-      {todo.tittle}
+      {todo.title}
     </li>
   )
 }
@@ -73,14 +87,15 @@ function App() {
   const [value, setValue] = useState('')
   const dispatch = useDispatch()
   const todos= useSelector(selectToDos)
-
+ console.log(todos)
+  
   const submit = (e) => {
     e.preventDefault()
     if(!value.trim()){
       return
     }
     const id = Math.random().toString(36)
-    const todo = {tittle: value, complete: false, id}
+    const todo = {title: value, complete: false, id}
     dispatch({type: 'todo/add', payload: todo})
     setValue('')
   }

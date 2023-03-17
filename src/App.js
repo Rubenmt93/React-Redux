@@ -2,7 +2,15 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { combineReducers } from "redux";
 
-
+export const asyncMiddleware = store => next => action =>{
+  if( typeof action === 'function'){
+    return action(store.dispatch, store.getState)
+  }
+  return  next(action)
+}
+export const  fetchThunk = () => dispatch => {
+  console.log('soy un thunk sea lo que sea eso que mi profe hipster dice')
+}
 export const filterReducer=(state= 'all', action) => {
   switch(action.type) {
     case 'filter/set':{
@@ -84,6 +92,7 @@ return (
       <button onClick={() => dispatch({type:'filter/set', payload: 'all'})}>Mostrar Todos</button>
       <button onClick={() => dispatch({type:'filter/set', payload: 'complete'})}>Completados</button>
       <button onClick={() =>  dispatch({type:'filter/set', payload: 'incomplete'})}>Incompletos</button>
+      <button onClick={() =>  dispatch(fetchThunk())}>Fetch</button>
 
 
       <ul>

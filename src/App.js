@@ -32,14 +32,37 @@ export const filterReducer=(state= 'all', action) => {
     
     }
 }
-export const todoReducer=(state= [], action) => {
+
+const initialFetching ={loading: 'idle', error:null}
+export const fetchingReducer=(state= initialFetching, action) => {
+
   switch(action.type) {
-    case 'todo/add': {
+    case 'todos/pending': {
+      return {...state, loading: 'pending'}
+    }
+    case 'todos/fulldilled':{
+      return {...state, loading: 'secceded'}
+    }
+
+    case 'todos/error':{
+      return {error:action.error, loading: 'rejected'}
+    }
+    default: 
+      return state
+    
+      
+
+  }
+}
+
+export const todosReducer=(state= [], action) => {
+  switch(action.type) {
+    case 'todos/add': {
       console.log('reducer')
       return  state.concat({...action.payload})
       
     }
-    case 'todo/complete' : {
+    case 'todos/complete' : {
       const newTodos= state.map(todo => {
         if(todo.id === action.payload.id){
           return {...todo, completed: !todo.completed}
@@ -58,12 +81,15 @@ export const todoReducer=(state= [], action) => {
 }
 
 export const reducer= combineReducers({
-  entities: todoReducer,
+  todos: combineReducers({
+    entities: todosReducer,
+    status: fetchingReducer,
+  }),
   filter: filterReducer
 })
 
 const selectToDos= state => {
-  const {entities, filter} = state
+  const {todos:{entities}, filter} = state
   if(filter === 'complete'){
     return entities.filter(todo => todo.completed)
   }
@@ -72,13 +98,16 @@ const selectToDos= state => {
   }
   return entities
 }
+
+const selectStatus = state => state.todos.status
+
 const TodoItem = ({todo}) => {
   const dispatch = useDispatch()
 
   return (    
     <li 
     style={{textDecoration: todo.completed? 'line-through' : 'none'}}
-    onClick={()=> dispatch({type: 'todo/complete',payload: todo})}>
+    onClick={()=> dispatch({type: 'todos/complete',payload: todo})}>
       {todo.title}
     </li>
   )
@@ -86,8 +115,10 @@ const TodoItem = ({todo}) => {
 function App() {
   const [value, setValue] = useState('')
   const dispatch = useDispatch()
+
   const todos= useSelector(selectToDos)
- console.log(todos)
+  const status= useSelector(selectStatus)
+
   
   const submit = (e) => {
     e.preventDefault()
@@ -96,9 +127,17 @@ function App() {
     }
     const id = Math.random().toString(36)
     const todo = {title: value, complete: false, id}
-    dispatch({type: 'todo/add', payload: todo})
+    dispatch({type: 'todos/add', payload: todo})
     setValue('')
   }
+
+  // if(status.loading === 'pending'){   
+  //    return <p> Cargando...</p>
+  // }
+   if(status.loading === 'rejected'){   
+    return <p> {status.error}</p>
+  }
+
 return (
     <div className="App">
       <form onSubmit={submit}>

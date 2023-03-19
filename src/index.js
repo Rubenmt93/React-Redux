@@ -4,7 +4,9 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import {createStore, applyMiddleware} from 'redux'
 
-import App, {reducer, asyncMiddleware} from './App';
+import App  from './App';
+import {asyncMiddleware} from './middleware/async'
+import {reducer} from './features/todos'
 
 
 const store= createStore(reducer, applyMiddleware(asyncMiddleware))

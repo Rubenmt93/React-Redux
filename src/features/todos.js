@@ -1,5 +1,7 @@
 import { combineReducers } from "redux"
 import {makefetchingReducer, makeSetReducer, reduceReducer, makeCrudReducer}from './utils.js'
+
+
 export const setPending = () => {return {type: 'pending'}}
 export const setFullFilled = payload =>({ type: 'todos/fullfilled', payload})
 export const setError = e => ({type: 'todos/error', error: e.message})
